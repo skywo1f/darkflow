@@ -3,6 +3,7 @@ import math
 import cv2
 import os
 import json
+import zmq
 #from scipy.special import expit
 #from utils.box import BoundBox, box_iou, prob_compare
 #from utils.box import prob_compare2, box_intersection
@@ -24,11 +25,19 @@ def findboxes(self, net_out):
 	boxes=box_constructor(meta,net_out)
 	return boxes
 
-def postprocess(self, net_out, im, save = True):
+def postprocess(self, net_out, im, firstLoop, save = True):
 	"""
 	Takes net output, draw net_out, save to disk
 	"""
 	boxes = self.findboxes(net_out)
+#start socket
+	if firstLoop:
+		global infoSocket		
+		context = zmq.Context()
+#  Socket to talk to server
+		print("Connecting to hello world server…")
+		infoSocket = context.socket(zmq.REQ)
+		infoSocket.connect("tcp://localhost:5555")
 
 	# meta
 	meta = self.meta
@@ -47,6 +56,10 @@ def postprocess(self, net_out, im, save = True):
 			continue
 		left, right, top, bot, mess, max_indx, confidence = boxResults
 		thick = int((h + w) // 300)
+		if mess == "person":		
+			infoSocket.send(str(bot).encode())
+			confirmation = infoSocket.recv()
+#		print("mess is " + str(mess))
 		if self.FLAGS.json:
 			resultsForJSON.append({"label": mess, "confidence": float('%.2f' % confidence), "topleft": {"x": left, "y": top}, "bottomright": {"x": right, "y": bot}})
 			continue

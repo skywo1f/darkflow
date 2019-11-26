@@ -9,6 +9,7 @@ import sys
 import cv2
 import os
 
+
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
 
 def build_train_op(self):
@@ -75,8 +76,8 @@ def camera(self):
         assert os.path.isfile(file), \
         'file {} does not exist'.format(file)
         
-    camera = cv2.VideoCapture(file)
-    
+#    camera = cv2.VideoCapture(file)
+    camera = cv2.VideoCapture(3)    
     if file == 0:
         self.say('Press [ESC] to quit demo')
         
@@ -111,6 +112,7 @@ def camera(self):
     start = timer()
     self.say('Press [ESC] to quit demo')
     # Loop through frames
+    firstLoop = True
     while camera.isOpened():
         elapsed += 1
         _, frame = camera.read()
@@ -126,8 +128,11 @@ def camera(self):
             feed_dict = {self.inp: buffer_pre}
             net_out = self.sess.run(self.out, feed_dict)
             for img, single_out in zip(buffer_inp, net_out):
-                postprocessed = self.framework.postprocess(
-                    single_out, img, False)
+                if firstLoop:
+                    postprocessed = self.framework.postprocess(single_out, img, True, False)
+                    firstLoop = False
+                else:
+                    postprocessed = self.framework.postprocess(single_out, img, False,False)
                 if SaveVideo:
                     videoWriter.write(postprocessed)
                 if file == 0: #camera window

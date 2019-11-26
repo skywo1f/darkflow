@@ -87,6 +87,7 @@ def return_predict(self, im):
     boxesInfo = list()
     for box in boxes:
         tmpBox = self.framework.process_box(box, h, w, threshold)
+#        print("h is at" + str(h))
         if tmpBox is None:
             continue
         boxesInfo.append({
