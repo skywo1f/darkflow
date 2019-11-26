@@ -32,12 +32,13 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 	boxes = self.findboxes(net_out)
 #start socket
 	if firstLoop:
-		global infoSocket		
-		context = zmq.Context()
+		if self.FLAGS.streamData:
+			global infoSocket		
+			context = zmq.Context()
 #  Socket to talk to server
-		print("Connecting to hello world server…")
-		infoSocket = context.socket(zmq.REQ)
-		infoSocket.connect("tcp://localhost:5555")
+			print("Connecting to hello world server…")
+			infoSocket = context.socket(zmq.REQ)
+			infoSocket.connect("tcp://localhost:5555")
 
 	# meta
 	meta = self.meta
@@ -56,9 +57,10 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 			continue
 		left, right, top, bot, mess, max_indx, confidence = boxResults
 		thick = int((h + w) // 300)
-		if mess == "person":		
-			infoSocket.send(str(bot).encode())
-			confirmation = infoSocket.recv()
+		if mess == "person":
+			if self.FLAGS.streamData:		
+				infoSocket.send(str(bot).encode())
+				confirmation = infoSocket.recv()
 #		print("mess is " + str(mess))
 		if self.FLAGS.json:
 			resultsForJSON.append({"label": mess, "confidence": float('%.2f' % confidence), "topleft": {"x": left, "y": top}, "bottomright": {"x": right, "y": bot}})
