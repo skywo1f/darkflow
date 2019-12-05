@@ -9,17 +9,17 @@ socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 global yPos
 yPos = 0
-camHeight = 55
+camHeight = 52
 def thread_gui():
 	window = Tk()
 	window.title("Distance approximator")
-	window.geometry('1200x100')
-	lbl = Label(window,text="Distance is :")
+	window.geometry('1200x200')
+	lbl = Label(window,text="Distance is (in) :")
 	lbl.grid(column=0,row=0)
 	lbl.config(font=("Courier", 44))
 	while True:		
-		labelVar = Label(window, text=yPos)
-		labelVar.config(font=("Courier", 44))
+		labelVar = Label(window, text=int(yPos))
+		labelVar.config(font=("Courier", 100))
 		labelVar.grid(column=1,row=0)
 		window.update()
 		print(yPos)

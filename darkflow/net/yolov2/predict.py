@@ -58,10 +58,11 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 		left, right, top, bot, mess, max_indx, confidence = boxResults
 		thick = int((h + w) // 300)
 		if mess == "person":
-			if self.FLAGS.streamData:		
-				infoSocket.send(str(bot).encode())
+			if self.FLAGS.streamData:
+				mid = (left + right)/2
+				print("sending '" +      str(bot) +" "+str(mid) + "'")
+				infoSocket.send(str(bot).encode()+ b" " + str(mid).encode())
 				confirmation = infoSocket.recv()
-#		print("mess is " + str(mess))
 		if self.FLAGS.json:
 			resultsForJSON.append({"label": mess, "confidence": float('%.2f' % confidence), "topleft": {"x": left, "y": top}, "bottomright": {"x": right, "y": bot}})
 			continue
