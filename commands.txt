@@ -1,0 +1,14 @@
+
+#simple camera test
+./flow --model cfg/yolov2-tiny.cfg --load bin/yolov2-tiny.weights --demo camera --gpu 1.0
+
+#simple camera test with position stream
+./flow --model cfg/yolov2-tiny.cfg --load bin/yolov2-tiny.weights --demo camera --gpu 1.0 --streamData True
+
+
+#train on voc
+./flow --model cfg/yolo-new.cfg --train --dataset "VOCdevkit/VOC2012/JPEGImages" --annotation "VOCdevkit/VOC2012/Annotations"
+
+
+#train using custom net
+./flow --model cfg/yolo_2_2_2_2_2_2.cfg --train --dataset "VOCdevkit/VOC2012/JPEGImages" --annotation "VOCdevkit/VOC2012/Annotations"
