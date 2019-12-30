@@ -36,6 +36,7 @@ class argHandler(dict):
         self.define('pbLoad', '', 'path to .pb protobuf file (metaLoad must also be specified)')
         self.define('metaLoad', '', 'path to .meta file generated during --savepb that corresponds to .pb file')
         self.define('streamData',False,'whether or not to wait for socket and send data')
+        self.define('triCam',False,'use three cameras and hard-stitch their images')
 
     def define(self, argName, default, description):
         self[argName] = default

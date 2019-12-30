@@ -22,7 +22,7 @@ def thread_gui():
 		labelVar.config(font=("Courier", 100))
 		labelVar.grid(column=1,row=0)
 		window.update()
-		print(yPos)
+#		print(yPos)
 	window.mainloop()
 
 def checkSocket():
@@ -30,15 +30,15 @@ def checkSocket():
 		global yPos
     #  Wait for next request from client
 		message = socket.recv()
-	
+    #  Send reply back to client
+		socket.send(b"confirmed")	
 		output = message.decode('utf-8')
 		print("position is %s" % output)
 		yPos = 30*np.tan(np.pi*(60 + camHeight*(480 - float(output))/240)/180)
     #  Do some 'work'
 #    time.sleep(1)
 
-    #  Send reply back to client
-		socket.send(b"confirmed")
+
 
 firstThread = threading.Thread(target=checkSocket)
 firstThread.start()

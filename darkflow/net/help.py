@@ -8,7 +8,7 @@ import numpy as np
 import sys
 import cv2
 import os
-
+from imutils.video import VideoStream
 
 old_graph_msg = 'Resolving old graph def {} (no guarantee)'
 
@@ -63,7 +63,7 @@ def _get_fps(self, frame):
     preprocessed = self.framework.preprocess(frame)
     feed_dict = {self.inp: [preprocessed]}
     net_out = self.sess.run(self.out, feed_dict)[0]
-    processed = self.framework.postprocess(net_out, frame, False)
+    processed = self.framework.postprocess(net_out, frame,False, False)
     return timer() - start
 
 def camera(self):
@@ -75,18 +75,37 @@ def camera(self):
     else:
         assert os.path.isfile(file), \
         'file {} does not exist'.format(file)
-        
-    camera = cv2.VideoCapture(file)
+
+    if (self.FLAGS.triCam):
+        capLeft = VideoStream(src=1).start()
+        capMid = VideoStream(src=2).start()
+        capRight = VideoStream(src=0).start()
+    else:    
+        camera = cv2.VideoCapture(file)
+
 #    camera = cv2.VideoCapture(6)    
     if file == 0:
         self.say('Press [ESC] to quit demo')
         
-    assert camera.isOpened(), \
-    'Cannot capture source'
-    
+#    assert camera.isOpened(), \
+#    'Cannot capture source'
+
     if file == 0:#camera window
         cv2.namedWindow('', 0)
-        _, frame = camera.read()
+        if (self.FLAGS.triCam):
+            frameLeft = capLeft.read()
+            h = 45
+            crop_left = frameLeft[0 + h:400 + h, 0:590]
+            frameMid = capMid.read()
+            h = 20
+            crop_mid = frameMid[0 + h:400 + h, 20:640]
+            frameRight = capRight.read()
+            h = 55
+            crop_right = frameRight[0 + h:400+ h,100:640]
+            frame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+        else:
+            _, frame = camera.read()
+
         height, width, _ = frame.shape
         cv2.resizeWindow('', width, height)
     else:
@@ -113,9 +132,21 @@ def camera(self):
     self.say('Press [ESC] to quit demo')
     # Loop through frames
     firstLoop = True
-    while camera.isOpened():
+    while True:
         elapsed += 1
-        _, frame = camera.read()
+        if (self.FLAGS.triCam):
+            frameLeft = capLeft.read()
+            h = 45
+            crop_left = frameLeft[0 + h:400 + h, 0:590]
+            frameMid = capMid.read()
+            h = 20
+            crop_mid = frameMid[0 + h:400 + h, 20:640]
+            frameRight = capRight.read()
+            h = 55
+            crop_right = frameRight[0 + h:400+ h,100:640]
+            frame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+        else:
+            _, frame = camera.read()
         if frame is None:
             print ('\nEnd of Video')
             break

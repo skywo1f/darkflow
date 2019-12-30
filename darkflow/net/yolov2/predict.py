@@ -36,10 +36,13 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 			global infoSocket		
 			context = zmq.Context()
 #  Socket to talk to server
-			print("Connecting to hello world server…")
+			print("Connecting to server…")
 			infoSocket = context.socket(zmq.REQ)
+#                        infoSocket.connect("tcp://172.20.152.59:5544")
 			infoSocket.connect("tcp://localhost:5555")
-
+			infoSocket.send(str(1).encode()+ b" " + str(1).encode())
+			confirmation = infoSocket.recv()
+			print("Connected")
 	# meta
 	meta = self.meta
 	threshold = meta['thresh']
