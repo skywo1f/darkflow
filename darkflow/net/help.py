@@ -77,8 +77,8 @@ def camera(self):
         'file {} does not exist'.format(file)
 
     if (self.FLAGS.triCam):
-        capLeft = VideoStream(src=1).start()
-        capMid = VideoStream(src=2).start()
+        capLeft = VideoStream(src=2).start()
+        capMid = VideoStream(src=6).start()
         capRight = VideoStream(src=0).start()
     else:    
         camera = cv2.VideoCapture(file)
@@ -102,7 +102,12 @@ def camera(self):
             frameRight = capRight.read()
             h = 55
             crop_right = frameRight[0 + h:400+ h,100:640]
-            frame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+            midFrame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+            topFrame = np.zeros((midFrame.shape[0], midFrame.shape[1],3), dtype = "uint8")
+            botFrame = np.zeros((midFrame.shape[0], midFrame.shape[1],3), dtype = "uint8")
+#            topFrame = midFrame
+#            botFrame = midFrame
+            frame = np.concatenate((topFrame,midFrame,botFrame),axis=0)
         else:
             _, frame = camera.read()
 
@@ -144,7 +149,13 @@ def camera(self):
             frameRight = capRight.read()
             h = 55
             crop_right = frameRight[0 + h:400+ h,100:640]
-            frame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+            midFrame = np.concatenate((crop_left, crop_mid,crop_right), axis=1)
+#            botFrame = midFrame
+#            topFrame = midFrame
+            topFrame = np.zeros((midFrame.shape[0], midFrame.shape[1],3), dtype = "uint8")
+            botFrame = np.zeros((midFrame.shape[0], midFrame.shape[1],3), dtype = "uint8")
+            frame = np.concatenate((topFrame,midFrame,botFrame),axis=0)
+
         else:
             _, frame = camera.read()
         if frame is None:

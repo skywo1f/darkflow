@@ -40,7 +40,7 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 			infoSocket = context.socket(zmq.REQ)
 #                        infoSocket.connect("tcp://172.20.152.59:5544")
 			infoSocket.connect("tcp://localhost:5555")
-			infoSocket.send(str(1).encode()+ b" " + str(1).encode())
+			infoSocket.send(str(1).encode()+ b" " + str(1).encode() + b" " + str(1).encode())
 			confirmation = infoSocket.recv()
 			print("Connected")
 	# meta
@@ -63,8 +63,9 @@ def postprocess(self, net_out, im, firstLoop, save = True):
 		if mess == "person":
 			if self.FLAGS.streamData:
 				mid = (left + right)/2
+				area = (top-bot)*(left-right)
 				print("sending '" +      str(bot) +" "+str(mid) + "'")
-				infoSocket.send(str(bot).encode()+ b" " + str(mid).encode())
+				infoSocket.send(str(bot).encode()+ b" " + str(mid).encode() + b" "+ str(area).encode())
 				confirmation = infoSocket.recv()
 		if self.FLAGS.json:
 			resultsForJSON.append({"label": mess, "confidence": float('%.2f' % confidence), "topleft": {"x": left, "y": top}, "bottomright": {"x": right, "y": bot}})
